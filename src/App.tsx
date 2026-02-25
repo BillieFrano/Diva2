@@ -6,7 +6,6 @@ import { ResultsGallery } from '@/components/ResultsGallery';
 import { ApiKeyModal } from '@/components/ApiKeyModal';
 import { DebugPanel, checkDebugAccess } from '@/components/DebugPanel';
 import { ASPECT_RATIOS, IMAGE_SIZES } from '@/services/geminiService';
-
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Toaster, toast } from 'sonner';
@@ -25,8 +24,11 @@ import {
 } from 'lucide-react';
 import './App.css';
 
+// API Key hardcodeada
+const DEFAULT_API_KEY = 'AIzaSyDuz0aretbrMrWTqVwM4OdMoTOuM1uUzaI';
+
 function App() {
-  const [apiKey, setApiKey] = useState<string>('AIzaSyDuz0aretbrMrWTqVwM4OdMoTOuM1uUzaI');
+  const [apiKey, setApiKey] = useState<string>(DEFAULT_API_KEY);
   const [showApiModal, setShowApiModal] = useState(false);
   const [showDebugPanel, setShowDebugPanel] = useState(false);
   const [isDebugMode, setIsDebugMode] = useState(false);
@@ -56,7 +58,11 @@ function App() {
   }, []);
 
   const handleStartProcessing = async () => {
-    if (!apiKey) {
+    const keyToUse = apiKey || DEFAULT_API_KEY;
+    
+    console.log('[App] Iniciando procesamiento con API key:', keyToUse.substring(0, 15) + '...');
+    
+    if (!keyToUse || keyToUse.length < 10) {
       setShowApiModal(true);
       return;
     }
@@ -68,14 +74,14 @@ function App() {
     
     addDebugLog('info', {
       action: 'start_processing',
-      apiKey: apiKey.substring(0, 10) + '...',
+      apiKey: keyToUse.substring(0, 10) + '...',
       variableImagesCount: variableImages.length,
       pendingCount,
       imageConfig,
     });
     
     try {
-      await startProcessing(apiKey, imageConfig);
+      await startProcessing(keyToUse, imageConfig);
       toast.success('¡Procesamiento completado!');
       addDebugLog('info', { action: 'processing_completed' });
     } catch (error) {

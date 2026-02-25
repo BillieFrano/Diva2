@@ -17,22 +17,23 @@ export const IMAGE_SIZES = [
   { value: '4K', label: '4K (4096x4096)' },
 ];
 
-// API Key hardcodeada
-const API_KEY = 'AIzaSyDuz0aretbrMrWTqVwM4OdMoTOuM1uUzaI';
-
-// Usar el modelo correcto para generación de imágenes
-const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp-image-generation:generateContent';
+// Modelo correcto para generación de imágenes
+const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-image-preview:generateContent';
 
 export async function processImageWithGemini(
   baseImageDataUrl: string,
   garmentImageDataUrl: string,
-  _apiKey: string, // ignorado, usamos la hardcodeada
+  apiKey: string,
   prompt: string,
   imageConfig: ImageConfig,
   signal?: AbortSignal
 ): Promise<string> {
   console.log('[Gemini] Iniciando proceso...');
-  console.log('[Gemini] Usando API key hardcodeada');
+  console.log('[Gemini] API Key recibida:', apiKey ? apiKey.substring(0, 10) + '...' : 'VACÍA');
+  
+  if (!apiKey || apiKey.length < 10) {
+    throw new Error('API key no válida');
+  }
   
   const baseImageBase64 = baseImageDataUrl.split(',')[1];
   const garmentImageBase64 = garmentImageDataUrl.split(',')[1];
@@ -70,13 +71,14 @@ export async function processImageWithGemini(
     generationConfig: {
       temperature: 0.3,
       topP: 0.95,
-      responseModalities: ['Text', 'Image'],
+      responseModalities: ['Image'],
     },
   };
 
-  console.log('[Gemini] Enviando request...');
+  console.log('[Gemini] Enviando request a:', GEMINI_API_URL);
+  console.log('[Gemini] Con API key:', apiKey.substring(0, 15) + '...');
   
-  const response = await fetch(`${GEMINI_API_URL}?key=${API_KEY}`, {
+  const response = await fetch(`${GEMINI_API_URL}?key=${apiKey}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
