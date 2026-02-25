@@ -1,0 +1,60 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 0 0% 7%;
+  --foreground: 0 0% 100%;
+  --card: 0 0% 10%;
+  --card-foreground: 0 0% 100%;
+  --popover: 0 0% 10%;
+  --popover-foreground: 0 0% 100%;
+  --primary: 340 82% 52%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 0 0% 15%;
+  --secondary-foreground: 0 0% 100%;
+  --muted: 0 0% 15%;
+  --muted-foreground: 0 0% 60%;
+  --accent: 340 82% 52%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 0 0% 20%;
+  --input: 0 0% 20%;
+  --ring: 340 82% 52%;
+  --radius: 0.5rem;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* DIVA Custom Styles */
+.diva-card {
+  @apply bg-[#1a1a1a] rounded-xl border border-white/10;
+}
+
+.diva-btn {
+  @apply bg-[#e91e63] hover:bg-[#d81b60] text-white font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+.diva-input {
+  @apply bg-[#1a1a1a] border border-white/20 rounded-lg text-white placeholder:text-white/40 focus:border-[#e91e63] focus:ring-1 focus:ring-[#e91e63] outline-none transition-all;
+}
+
+.diva-upload {
+  @apply border-2 border-dashed border-white/20 rounded-xl hover:border-[#e91e63]/50 hover:bg-[#e91e63]/5 transition-all;
+}
+
+.diva-progress {
+  @apply bg-white/10 rounded-full overflow-hidden;
+}
+
+.diva-progress-bar {
+  @apply bg-gradient-to-r from-[#e91e63] to-[#f06292] transition-all duration-300;
+}
