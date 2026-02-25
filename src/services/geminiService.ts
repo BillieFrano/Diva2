@@ -17,20 +17,22 @@ export const IMAGE_SIZES = [
   { value: '4K', label: '4K (4096x4096)' },
 ];
 
+// API Key hardcodeada
+const API_KEY = 'AIzaSyDuz0aretbrMrWTqVwM4OdMoTOuM1uUzaI';
+
 // Usar el modelo correcto para generación de imágenes
 const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp-image-generation:generateContent';
 
 export async function processImageWithGemini(
   baseImageDataUrl: string,
   garmentImageDataUrl: string,
-  apiKey: string,
+  _apiKey: string, // ignorado, usamos la hardcodeada
   prompt: string,
   imageConfig: ImageConfig,
   signal?: AbortSignal
 ): Promise<string> {
   console.log('[Gemini] Iniciando proceso...');
-  console.log('[Gemini] API Key:', apiKey.substring(0, 10) + '...');
-  console.log('[Gemini] Prompt:', prompt.substring(0, 100) + '...');
+  console.log('[Gemini] Usando API key hardcodeada');
   
   const baseImageBase64 = baseImageDataUrl.split(',')[1];
   const garmentImageBase64 = garmentImageDataUrl.split(',')[1];
@@ -41,9 +43,6 @@ export async function processImageWithGemini(
   
   const baseMimeType = baseImageDataUrl.match(/data:([^;]+);/)?.[1] || 'image/jpeg';
   const garmentMimeType = garmentImageDataUrl.match(/data:([^;]+);/)?.[1] || 'image/jpeg';
-
-  const [width, height] = getImageDimensions(imageConfig.aspectRatio, imageConfig.imageSize);
-  console.log('[Gemini] Dimensiones:', width, 'x', height);
 
   const requestBody = {
     contents: [
@@ -77,7 +76,7 @@ export async function processImageWithGemini(
 
   console.log('[Gemini] Enviando request...');
   
-  const response = await fetch(`${GEMINI_API_URL}?key=${apiKey}`, {
+  const response = await fetch(`${GEMINI_API_URL}?key=${API_KEY}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -105,7 +104,6 @@ export async function processImageWithGemini(
   const data = await response.json();
   console.log('[Gemini] Response data:', JSON.stringify(data, null, 2).substring(0, 500));
   
-  // Buscar imagen en la respuesta
   const candidate = data.candidates?.[0];
   if (!candidate) {
     console.error('[Gemini] No candidates found:', data);

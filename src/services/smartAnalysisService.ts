@@ -1,6 +1,9 @@
 // Servicio de análisis inteligente para DIVA
 // Analiza la imagen variable y selecciona la pose base correcta
 
+// API Key hardcodeada
+const API_KEY = 'AIzaSyDuz0aretbrMrWTqVwM4OdMoTOuM1uUzaI';
+
 const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
 
 // Las 4 poses del modelo base (pre-cargadas en el sistema)
@@ -63,7 +66,7 @@ Sé muy específico y detallado. Responde SOLO el JSON, sin texto adicional.`;
 // Función para analizar la imagen variable
 export async function analizarPrenda(
   imagenDataUrl: string,
-  apiKey: string
+  _apiKey: string // ignorado, usamos la hardcodeada
 ): Promise<AnalisisPrenda> {
   const imageBase64 = imagenDataUrl.split(',')[1];
   const mimeType = imagenDataUrl.match(/data:([^;]+);/)?.[1] || 'image/jpeg';
@@ -93,7 +96,7 @@ export async function analizarPrenda(
   };
 
   try {
-    const response = await fetch(`${GEMINI_API_URL}?key=${apiKey}`, {
+    const response = await fetch(`${GEMINI_API_URL}?key=${API_KEY}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
