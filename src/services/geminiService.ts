@@ -72,9 +72,6 @@ export async function processImageWithGemini(
       temperature: 0.3,
       topP: 0.95,
       responseModalities: ['Text', 'Image'],
-      aspectRatio: imageConfig.aspectRatio,
-      width,
-      height,
     },
   };
 
