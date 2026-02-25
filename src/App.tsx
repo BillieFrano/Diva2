@@ -6,7 +6,7 @@ import { ResultsGallery } from '@/components/ResultsGallery';
 import { ApiKeyModal } from '@/components/ApiKeyModal';
 import { DebugPanel, checkDebugAccess } from '@/components/DebugPanel';
 import { ASPECT_RATIOS, IMAGE_SIZES } from '@/services/geminiService';
-import { DEFAULT_GEMINI_API_KEY } from '@/config/api';
+
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Toaster, toast } from 'sonner';
@@ -26,7 +26,7 @@ import {
 import './App.css';
 
 function App() {
-  const [apiKey, setApiKey] = useState<string>(DEFAULT_GEMINI_API_KEY);
+  const [apiKey, setApiKey] = useState<string>('');
   const [showApiModal, setShowApiModal] = useState(false);
   const [showDebugPanel, setShowDebugPanel] = useState(false);
   const [isDebugMode, setIsDebugMode] = useState(false);
@@ -56,9 +56,7 @@ function App() {
   }, []);
 
   const handleStartProcessing = async () => {
-    const keyToUse = apiKey || DEFAULT_GEMINI_API_KEY;
-    
-    if (!keyToUse) {
+    if (!apiKey) {
       setShowApiModal(true);
       return;
     }
@@ -77,7 +75,7 @@ function App() {
     });
     
     try {
-      await startProcessing(keyToUse, imageConfig);
+      await startProcessing(apiKey, imageConfig);
       toast.success('¡Procesamiento completado!');
       addDebugLog('info', { action: 'processing_completed' });
     } catch (error) {
@@ -134,7 +132,14 @@ function App() {
                 <Bug className="w-4 h-4" />
               </Button>
             )}
-
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setShowApiModal(true)}
+              className="text-white/60 hover:text-white hover:bg-white/10 h-8 w-8"
+            >
+              <Settings className="w-4 h-4" />
+            </Button>
             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#e91e63] to-[#f06292] flex items-center justify-center">
               <User className="w-4 h-4 text-white" />
             </div>

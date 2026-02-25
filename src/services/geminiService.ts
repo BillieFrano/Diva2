@@ -17,7 +17,7 @@ export const IMAGE_SIZES = [
   { value: '4K', label: '4K (4096x4096)' },
 ];
 
-const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-image-preview:generateContent';
+const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp-image-generation:generateContent';
 
 export async function processImageWithGemini(
   baseImageDataUrl: string,
