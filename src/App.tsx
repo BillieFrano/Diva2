@@ -26,7 +26,7 @@ import {
 import './App.css';
 
 function App() {
-  const [apiKey, setApiKey] = useState<string>('');
+  const [apiKey, setApiKey] = useState<string>('AIzaSyDuz0aretbrMrWTqVwM4OdMoTOuM1uUzaI');
   const [showApiModal, setShowApiModal] = useState(false);
   const [showDebugPanel, setShowDebugPanel] = useState(false);
   const [isDebugMode, setIsDebugMode] = useState(false);
