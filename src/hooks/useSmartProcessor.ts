@@ -127,12 +127,19 @@ export function useSmartProcessor() {
     });
 
     const pendingImages = variableImages.filter((img) => img.status === 'pending');
+    console.log(`[Processor] Iniciando procesamiento. Total: ${variableImages.length}, Pendientes: ${pendingImages.length}`);
 
     for (let i = 0; i < pendingImages.length; i++) {
       if (abortControllerRef.current.signal.aborted) break;
 
       const image = pendingImages[i];
       const actualIndex = variableImages.findIndex((img) => img.id === image.id);
+      console.log(`[Processor] Procesando ${image.file.name} - Índice en array: ${actualIndex}`);
+      
+      if (actualIndex === -1) {
+        console.error('[Processor] ERROR: No se encontró la imagen en el array');
+        continue;
+      }
 
       // Actualizar estado a procesando
       setVariableImages((prev) =>
@@ -148,13 +155,19 @@ export function useSmartProcessor() {
       }));
 
       try {
+        console.log(`[Processor] Procesando imagen ${i + 1}/${pendingImages.length}:`, image.file.name);
+        
         // PASO 1: Analizar la prenda (si no está analizada)
+        console.log('[Processor] Paso 1: Analizando prenda...');
         const analisis = await analizarImagen(image, apiKey);
+        console.log('[Processor] Análisis:', analisis);
 
         // PASO 2: Seleccionar imagen base según pose
         const imagenBasePath = seleccionarImagenBase(analisis.poseDetectada);
+        console.log('[Processor] Paso 2: Imagen base seleccionada:', imagenBasePath);
 
         // PASO 3: Cargar la imagen base
+        console.log('[Processor] Paso 3: Cargando imagen base...');
         const imagenBaseResponse = await fetch(imagenBasePath);
         if (!imagenBaseResponse.ok) {
           throw new Error(`No se pudo cargar la imagen base: ${imagenBasePath}`);
@@ -165,11 +178,14 @@ export function useSmartProcessor() {
           reader.onloadend = () => resolve(reader.result as string);
           reader.readAsDataURL(imagenBaseBlob);
         });
+        console.log('[Processor] Imagen base cargada correctamente');
 
         // PASO 4: Generar prompt enriquecido
         const promptEnriquecido = generarPromptEnriquecido(analisis);
+        console.log('[Processor] Paso 4: Prompt generado');
 
         // PASO 5: Procesar con Gemini
+        console.log('[Processor] Paso 5: Llamando a Gemini...');
         const result = await processImageWithGemini(
           imagenBaseDataUrl,
           image.preview,
@@ -178,16 +194,21 @@ export function useSmartProcessor() {
           configToUse,
           abortControllerRef.current.signal
         );
+        console.log('[Processor] Resultado recibido de Gemini, length:', result.length);
 
         // Actualizar con resultado
-        setVariableImages((prev) =>
-          prev.map((img, idx) =>
+        console.log('[Processor] Actualizando estado con resultado...');
+        setVariableImages((prev) => {
+          console.log('[Processor] setVariableImages llamado, actualIndex:', actualIndex);
+          return prev.map((img, idx) =>
             idx === actualIndex
               ? { ...img, status: 'completed', result, imagenBaseSeleccionada: imagenBasePath }
               : img
-          )
-        );
+          );
+        });
+        console.log('[Processor] Estado actualizado');
       } catch (error) {
+        console.error('[Processor] Error procesando imagen:', error);
         setVariableImages((prev) =>
           prev.map((img, idx) =>
             idx === actualIndex
